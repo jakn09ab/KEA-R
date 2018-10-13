@@ -1,0 +1,218 @@
+Introduction to R
+========================================================
+author: JSK
+date: 12 okt 2018
+autosize: true
+
+First Slide
+========================================================
+
+Todays agenda
+
+- About R
+- github: Sharing methods for easing new researchers introducion to data-management
+- Introduction R studio
+- basic syntax
+- excercise
+
+
+About R
+========================================================
+
+- Free open source project called R
+- Expanded functionality through packages that are easily installed
+- Users contribute to CRAN, an online repository including most none-bioinformatics packages
+- Consequently not strict coherent syntax
+- Relevant elements may have limited documentation, but most popular packages have extensive documentation.
+
+github
+========================================================
+
+- online repository (code bank)
+- our repository is free and PUBLIC
+- I hope we can generate dummy data resembling data structures that we all work with
+- and share methods that solve the problems that we all have to go through
+
+https://stackoverflow.com/
+========================================================
+
+- online troubleshooting
+- find answers to most question
+- if not, questions are usually answered in a matter of hours
+- You MUST make reproducible problems or suffer bad reputation
+- I imagine that we can help each other on stackexchange:
+
+create reproducible example when there is an answer we cannot find, and share it with our co-workers in an URL.
+
+Special considerations for R
+========================================================
+
+- some base R operaters are slow
+- like Stata, R loads (per default) data into memory.
+- workarounds with database integration exists, but not for DST
+- use dplyr or data.table for data management
+- use ggplot2 for most graphics
+
+
+install and load packages
+========================================================
+
+```{r}
+#call library() at start of syntax, every new session
+library(dplyr) # most used, great documentation, maybe easier syntax
+# a little slow with big datasets. Part of the "tidyverse"
+library(data.table) #very fast and compact syntax
+#contains fread() and fwrite() 
+library(ggplot2) # plotting (base plots like plot() and hist () are fast and fine for exploration
+library(lubridate) #great package for handling dates
+```
+
+Basic syntax
+========================================================
+```{r}
+A <- 1+1 #assign to value
+```
+
+```{r}
+A <- c(1,1,1,1) #when data is one-dimensional data is saved as a vector
+```
+
+```{r}
+a <- c(rep(1,4)) #identical to A, R is case sensitive
+```
+
+```{r}
+B <- A+a
+B
+```
+
+Basic syntax
+========================================================
+- Build in dataset: mtcars
+```{r}
+mtcars <- mtcars
+head(mtcars)
+setDT(mtcars)
+```
+
+Basic syntax
+========================================================
+- Build in dataset: mtcars
+```{r}
+summary(mtcars)
+```
+
+Basic syntax
+========================================================
+- Build in dataset: mtcars
+```{r}
+summary(mtcars$mpg)
+?summary #access documentation for summary function
+```
+
+Basic syntax
+========================================================
+
+```{r}
+1:10
+LETTERS[1:10]
+A <- 1:10
+B <-LETTERS[1:10]
+```
+
+Basic syntax
+========================================================
+
+```{r}
+rbind(A, B) #rowbind
+```
+
+Basic syntax
+========================================================
+
+```{r}
+cbind(A, B) #columnbind
+C <- cbind(A, B)
+```
+Basic syntax
+========================================================
+
+```{r}
+t(C) #transpose data
+```
+Basic syntax
+========================================================
+
+```{r}
+class(C)
+```
+I don't like matrix. Dataframe is standard R format
+
+```{r}
+C <- as.data.frame(C)
+```
+
+```{r}
+class(C)
+```
+
+
+Basic syntax
+========================================================
+but I use data.table
+```{r}
+setDT(mtcars)
+mtcars
+```
+
+Basic syntax
+========================================================
+syntax is simple:
+mtcars[filtering, manipulation, by-group]
+```{r}
+mtcars[mpg >18]
+```
+
+Basic syntax
+========================================================
+syntax is simple:
+mtcars[filtering, manipulation, by-group]
+```{r}
+mtcars[mpg >18, mean(hp)]
+```
+
+Basic syntax
+========================================================
+syntax is simple:
+mtcars[filtering, manipulation, by-group]
+```{r}
+mtcars[mpg >18, mean(hp), by = cyl]
+```
+
+
+Basic syntax
+========================================================
+syntax is simple:
+mtcars[filtering, manipulation, by-group][and can be chained]
+```{r}
+mtcars[mpg >18, mean(hp), by = cyl][V1 >90]
+D <- mtcars[mpg >18, mean(hp), by = cyl][V1 >90]
+```
+
+Basic syntax
+========================================================
+```{r}
+head(D)
+setnames(D, c("cyl", "V1"), c("bamse", "kylling"))
+D
+```
+
+
+Excercise: Create dataset with columns:
+========================================================
+
+- ID: A-Z
+- AGE: ages between 18:80
+- SIBLINGS: "YES" or "NO"
+- save in lesson 1 folder and upload to github
+
