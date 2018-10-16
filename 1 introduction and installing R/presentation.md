@@ -403,7 +403,7 @@ mtcars[mpg >18, mean(hp), by = cyl][V1 >90]
 D <- mtcars[mpg >18, mean(hp), by = cyl][V1 >90]
 ```
 
-Basic syntax
+Basic syntaxs
 ========================================================
 
 ```r
