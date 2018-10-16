@@ -1,6 +1,6 @@
 Introduction to R
 ========================================================
-author: JSK
+author: JSK@clin.au.dk
 date: 12 okt 2018
 autosize: true
 
@@ -44,6 +44,8 @@ https://stackoverflow.com/
 
 create reproducible example when there is an answer we cannot find, and share it with our co-workers in an URL.
 
+https://stackoverflow.com/questions/48263698/data-table-how-to-get-the-blazingly-fast-subsets-it-promises-and-apply-to-a-sec #example
+
 Special considerations for R
 ========================================================
 
@@ -62,6 +64,7 @@ install and load packages
 #call library() at start of syntax, every new session
 library(dplyr) # most used, great documentation, maybe easier syntax
 # a little slow with big datasets. Part of the "tidyverse"
+#https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf
 library(data.table) #very fast and compact syntax
 #contains fread() and fwrite() 
 library(ggplot2) # plotting (base plots like plot() and hist () are fast and fine for exploration
@@ -244,6 +247,7 @@ t(C) #transpose data
 A "1"  "2"  "3"  "4"  "5"  "6"  "7"  "8"  "9"  "10" 
 B "A"  "B"  "C"  "D"  "E"  "F"  "G"  "H"  "I"  "J"  
 ```
+
 Basic syntax
 ========================================================
 
