@@ -1,0 +1,25 @@
+---
+title: "Exercise 1 ED"
+author: "Elena Dudukina, Dept. of Clinical Epidemiology, AU"
+date: "16 October 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+- ID: A-Z
+- AGE: ages between 18:80
+- SIBLINGS: "YES" or "NO"
+- save in lesson 1 folder and upload to github
+```{r Libraries,}
+library(tidyverse)
+library(data.table)
+```
+```{r Excercise 1: Create dataset with columns,}
+(ID <- LETTERS [1:26])
+(AGE <- 18:43)
+(SIBLINGS <- rep(c("YES", "NO"), 13))
+data <- data.frame(ID, AGE, SIBLINGS)
+```
+
