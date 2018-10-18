@@ -1,8 +1,10 @@
-presentation 2 working with dates and generating datsets
+presentation 2 working with dates and generating datasets
 ========================================================
 author: JSK@clin.au.dk
 date: 15 oktober 2018
 autosize: true
+
+
 
 Todays agenda
 ========================================================
@@ -12,74 +14,168 @@ Todays agenda
 -merging data
 -generating automated flowcharts
 
+
 Sourcing files
 ========================================================
+source data files: remember R use / not \ for pathnames
+When you start a session set your working directory: Session->set working directory -> choose whats appropriate like source file location get and idea of the location by using getwd()
+```{r}
+#source("filepath.R") #runs the entire syntax of the file at the filepath.
+getwd() #returns your current working directory
+```
+
+#source() commands runs the entire content of the syntax
+#now running datasets.R this syntax will return cpr and lsr datasets.
 
 Dates
 ========================================================
 Lubridate is a tidyverse package that works great with dates. 
 ```{r}
-#install.packages("lubridate")
-library(lubridate)
+library(lubridate) #great package for handling dates
+#call library() at start of syntax, every new session
+library(dplyr) # most used, great documentation, maybe easier syntax
+# a little slow with big datasets. Part of the "tidyverse"
+#https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf
+library(data.table) #very fast and compact syntax
+#contains fread() and fwrite() 
+library(ggplot2) # plotting (base plots like plot() and hist () are fast and fine for exploration
 ```
+
+
+more Dates
+============================
 Often one will have data saved in a character format
-```{r}
+
 date <- "31-01-2012"
 dmy(date)
-class(dmy(date))
-```
+
+
 
 Dates 2
 ========================================================
 the variables may have different positioning
-```{r}
+
 date <- "01-31-2012"
 mdy(date) #changed order (month-day-year)
 class(dmy(date))
-```
+
 Or even a combination of numeric and Character
-```{r}
+
 date <- "31-JAN-2012"
 dmy(date)
 class(dmy(date))
-```
+
+
 But lubridate fixes this nicely.
 
-Dates 2
-========================================================
-the variables may have different positioning
-```{r}
-date <- dmy(date)
-```
-Or even a combination of numeric and Character
-```{r}
-date <- "31-JAN-2012"
-dmy(date)
-class(dmy(date))
-```
-But lubridate fixes this nicely.
-
-Dates 3
+Dates 4
 ========================================================
 it works with logical operators 
-```{r}
+
 date > dmy("31-12-2014") # and even +, - and >, <= or NOT EQUAL TO: !=
 dmy("31-12-2014") - date
 as.numeric(dmy("31-12-2014") - date) #and converts to numeric
 year(date) # gives the year as numeric
-```
 
 
 merging two datasets
 ========================================================
-
 ```{r}
-#source data files
+cpr <- fread("/Users/JakobKnudsen/github/KEA-R/2 generating datasets/cpr.csv")
+lsr <- fread("/Users/JakobKnudsen/github/KEA-R/2 generating datasets/lsr.csv")
 #merging two data.tables requires the function to know what key variable to merge by
-setkey(lsr, ID)
-setkey(DATA, ID)
-merge(lsr, DATA)
+setkey(lsr, CPR_ENCRYPTED)
+setkey(cpr, CPR_ENCRYPTED)
+cpr[,.N]
+lsr[,.N]
 
+```
+
+merging two datasets
+========================================================
+```{r}
+merge(lsr, cpr)
+```
+
+merging two datasets - what happens?
+========================================================
+```{r}
+merge(lsr, cpr)[,.N]
+#longer than lsr
+length(unique(cpr$CPR_ENCRYPTED))
+length(unique(lsr$CPR_ENCRYPTED))
+```
+merging two datasets - cpr
+========================================================
+```{r}
+merge(lsr, cpr[,head(.SD,1), by = CPR_ENCRYPTED])[,.N] #takes the first "event" for each CPR_ENCRYPTED
+#now the output equals the number in lsr.
+#by default merge(x,y) only keeps rows that has keys[CPR_ENCRYPTED] in both dataset. Keeping the relevant portion is easy using
+# all.x = TRUE, all.y= TRUE or if both all=TRUE
+```
+all CPR_ENCRYPTED are generated from cpr, so no CPR_ENCRYPTED exists in lsr that are not in cpr
+
+merging two datasets - cpr and lsr
+========================================================
+```{r}
+merge(lsr, cpr, all.x = TRUE)[,.N] #x=lsr, y=cpr
+merge(lsr, cpr, all.y = TRUE)[,.N]#x=lsr, y=cpr
+merge(lsr, cpr, all = TRUE)[,.N]
+```
+
+merging two datasets - cpr and lsr
+========================================================
+You can decide which columns to include in the merge
+```{r}
+lsr
+```
+
+merging two datasets - cpr and lsr
+========================================================
+```{r}
+lsr[,.(CPR_ENCRYPTED, ATClist)]
+```
+
+merging two datasets - cpr and lsr
+========================================================
+```{r}
+cpr[,.(CPR_ENCRYPTED, birth_year)]
+```
+
+merging two datasets - cpr and lsr
+========================================================
+```{r}
+merge(lsr[,.(CPR_ENCRYPTED, ATClist)], cpr[,.(CPR_ENCRYPTED, birth_year)])
+```
+
+merging two datasets - cpr and lsr
+========================================================
+I can assign them
+```{r}
+A <- merge(lsr[,.(CPR_ENCRYPTED, ATClist)], cpr[,.(CPR_ENCRYPTED, birth_year)])
+```
+
+merging two datasets - cpr and lsr
+========================================================
+chain them for further operations
+```{r}
+merge(lsr[,.(CPR_ENCRYPTED, ATClist)], cpr[,.(CPR_ENCRYPTED, birth_year)])[,.N, by = birth_year]
+```
+
+merging two datasets - cpr and lsr
+========================================================
+make plots
+```{r}
+hist(merge(lsr[,.(CPR_ENCRYPTED, ATClist)], cpr[,.(CPR_ENCRYPTED, birth_year)])[,birth_year])
+```
+and much more
+
+merging two datasets - cpr and lsr
+========================================================
+by the way ggplot syntax would be
+```{r}
+merge(lsr[,.(CPR_ENCRYPTED, ATClist)], cpr[,.(CPR_ENCRYPTED, birth_year)])%>% #notice piping operator
+  ggplot(.)+geom_histogram(aes(x = birth_year))
 ```
 
 Creating flowcharts
@@ -114,15 +210,15 @@ a->d
 
 Excercises
 ========================================================
--source cpr from file.
--cpr may have duplicate IDs. Filter these so no two IDs has different values. (HINT: unique())
+-source cpr from file datasets.R in 2 generating datasets.
+-cpr may have duplicate IDs. Filter these so no two IDs has different values. (HINT: head(,1))
 -fix dates in cpr (turn them into class="DATE")
 -create new column in cpr that indicates what year they were born.
 -remove patients dying after 2018 (too weird) hint: first condition of DATA[filter,manipulate , by =]
--create a new population called population by sampling 75% of cpr.
+-create a new population called population by randomly sampling approx. 75% of cpr.
 -population includes only two columns: CPR_ENCRYPTED and an indexdate
 -indexdate is calculated as BIRTHDAY+365*rnorm(1, mean=60, sd = 15)
--restrict lpr so it only includes patients included in population.
+-restrict lpr so it only includes patients included in population (using merge(x,y).
 -create flowchart that automatically updates to reflect N in the stages of cpr reduction to population.
 
 push solution to github  excercice2_yourinials.R
@@ -137,3 +233,7 @@ Excercise for next time: Create labka dataset
 - analysisno random number between 10.000 and 1.000.000
 
 - save labka_yourinitals.R in lesson 2 assignment 2 folder and push to github
+
+
+
+
