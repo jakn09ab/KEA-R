@@ -52,8 +52,12 @@ more Dates
 ============================
 Often one will have data saved in a character format
 
+
+
+```r
 date <- "31-01-2012"
 dmy(date)
+```
 
 
 
@@ -61,15 +65,24 @@ Dates 2
 ========================================================
 the variables may have different positioning
 
+
+```r
 date <- "01-31-2012"
 mdy(date) #changed order (month-day-year)
 class(dmy(date))
+```
+
+
 
 Or even a combination of numeric and Character
 
+```r
 date <- "31-JAN-2012"
 dmy(date)
 class(dmy(date))
+```
+
+
 
 
 But lubridate fixes this nicely.
@@ -78,10 +91,13 @@ Dates 4
 ========================================================
 it works with logical operators 
 
+
+```r
 date > dmy("31-12-2014") # and even +, - and >, <= or NOT EQUAL TO: !=
 dmy("31-12-2014") - date
 as.numeric(dmy("31-12-2014") - date) #and converts to numeric
 year(date) # gives the year as numeric
+```
 
 
 merging two datasets
@@ -421,7 +437,7 @@ make plots
 hist(merge(lsr[,.(CPR_ENCRYPTED, ATClist)], cpr[,.(CPR_ENCRYPTED, birth_year)])[,birth_year])
 ```
 
-![plot of chunk unnamed-chunk-14](presentation 2 generating datsets-figure/unnamed-chunk-14-1.png)
+![plot of chunk unnamed-chunk-18](presentation 2 generating datsets-figure/unnamed-chunk-18-1.png)
 and much more
 
 merging two datasets - cpr and lsr
@@ -433,52 +449,65 @@ merge(lsr[,.(CPR_ENCRYPTED, ATClist)], cpr[,.(CPR_ENCRYPTED, birth_year)])%>% #n
   ggplot(.)+geom_histogram(aes(x = birth_year))
 ```
 
-![plot of chunk unnamed-chunk-15](presentation 2 generating datsets-figure/unnamed-chunk-15-1.png)
+![plot of chunk unnamed-chunk-19](presentation 2 generating datsets-figure/unnamed-chunk-19-1.png)
 
 Creating flowcharts
 ========================================================
 
+```r
+library(DiagrammeR) #package for flowcharts. Graphs are primarily drawn in the DOT language using the GraphViz and `mermaid styles. :-(
+# Define some sample data, and this syntax is easily adapted to a regular flowchart.
+data <- list(a=1000, b=800, c=600, d=400)
+DiagrammeR::grViz("
+digraph graph2 {
 
+graph [layout = dot]
 
+# node definitions with substituted label text
+node [shape = rectangle, width = 4, fillcolor = Biege]
+a [label = '@@1']
+b [label = '@@2']
+c [label = '@@3']
+d [label = '@@4']
+
+a -> b -> c ->d 
+a->d
+}
+
+[1]:  paste0('CPR Raw Data (n = ', data$a, ')')
+[2]: paste0('Remove Errors (n = ', data$b, ')')
+[3]: paste0('limit to population (n = ', data$c, ')')
+[4]: paste0('something amazing (n = ', data$d, ')')
+")
 ```
-processing file: presentation 2 generating datsets.Rpres
-
-Attaching package: 'lubridate'
-
-The following object is masked from 'package:base':
-
-    date
 
 
-Attaching package: 'dplyr'
+Excercises
+========================================================
+- source cpr from file datasets.R in 2 generating datasets.
+- cpr may have duplicate IDs. Filter these so no two IDs has different values. (HINT: head(,1))
+- fix dates in cpr (turn them into class="DATE")
+- create new column in cpr that indicates what year they were born.
+- remove patients dying after 2018 (too weird) hint: first condition of DATA[filter,manipulate , by =]
+- create a new population called population by randomly sampling approx. 75% of cpr.
+- population includes only two columns: CPR_ENCRYPTED and an indexdate
+- indexdate is calculated as BIRTHDAY+365*rnorm(1, mean=60, sd = 15)
+- restrict lpr so it only includes patients included in population (using merge(x,y).
+- create flowchart that automatically updates to reflect N in the stages of cpr reduction to population.
 
-The following objects are masked from 'package:lubridate':
+push solution to github  excercice2_yourinials.R
 
-    intersect, setdiff, union
+Excercise for next time: Create labka dataset 
+========================================================
 
-The following objects are masked from 'package:stats':
+- CPR_ENCRYPTED: all unqiue CPR_ENCRYPTED from cpr
+- each unique CPR_ENCRYPTED should have between 0 and 15 lab-results: hint: look at how I generate lsr prescription data
+- SampleDate: BIRTHDAY+365*rnorm(1, mean=60, sd = 15)
+- result rnorm(1, mean=20, sd = 15)
+- analysisno random number between 10.000 and 1.000.000
 
-    filter, lag
-
-The following objects are masked from 'package:base':
-
-    intersect, setdiff, setequal, union
+- save labka_yourinitals.R in lesson 2 assignment 2 folder and push to github
 
 
-Attaching package: 'data.table'
 
-The following objects are masked from 'package:dplyr':
 
-    between, first, last
-
-The following objects are masked from 'package:lubridate':
-
-    hour, isoweek, mday, minute, month, quarter, second, wday,
-    week, yday, year
-
-`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-Quitting from lines 184-208 (presentation 2 generating datsets.Rpres) 
-Fejl i loadNamespace(name) : there is no package called 'webshot'
-Kald: knit ... tryCatch -> tryCatchList -> tryCatchOne -> <Anonymous>
-Kørsel stoppet
-```
